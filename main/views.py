@@ -6,7 +6,7 @@ from .models import Post, Comment, Reply
 from .forms import PostForm, CommentForm, ReplyForm
 
 def home(request):
-    return render(request, 'main/index.html')
+    return render(request, 'index.html')
 def post_list(request):
     posts = Post.objects.all().order_by('-created_at')
     return render(request, 'main/post_list.html', {'posts': posts})
