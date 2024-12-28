@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <h1>{% if form.instance.pk %}Edit Post{% else %}Create New Post{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.media }}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+
+{% endblock %}

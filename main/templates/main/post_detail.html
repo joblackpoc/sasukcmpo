@@ -1,0 +1,74 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <div class="post-detail">
+        <h1>{{ post.title }}</h1>
+        <p>By {{ post.author }} on {{ post.created_at }}</p>
+        <div class="content">
+            {{ post.content|safe }}
+        </div>
+        
+        {% if user.is_authenticated %}
+            <div class="like-section">
+                <span class="like-btn {% if user in post.likes.all %}liked{% endif %}"
+                      data-post-id="{{ post.pk }}">
+                    ❤ <span id="likes-count-{{ post.pk }}">{{ post.total_likes }}</span>
+                </span>
+            </div>
+        {% endif %}
+
+        <div class="comment-section">
+            <h3>Comments</h3>
+            {% if user.is_authenticated %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <button type="submit">Add Comment</button>
+                </form>
+            {% endif %}
+
+            {% for comment in comments %}
+                <div class="comment">
+                    <p>{{ comment.content }}</p>
+                    <p>By {{ comment.author }} on {{ comment.created_at }}</p>
+                    
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'add_reply' comment.id %}">
+                            {% csrf_token %}
+                            <textarea name="content" rows="2"></textarea>
+                            <button type="submit">Reply</button>
+                        </form>
+                    {% endif %}
+
+                    <div class="reply-section">
+                        {% for reply in comment.replies.all %}
+                            <div class="reply">
+                                <p>{{ reply.content }}</p>
+                                <p>By {{ reply.author }} on {{ reply.created_at }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('.like-btn').click(function() {
+                var postId = $(this).data('post-id');
+                $.post('/post/' + postId + '/like/', {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                })
+                .done(function(response) {
+                    $('#likes-count-' + postId).text(response.likes_count);
+                    if (response.liked) {
+                        $('.like-btn').addClass('liked');
+                    } else {
+                        $('.like-btn').removeClass('liked');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,2 +1,0 @@
-# HSRcmpo
-# sasukcmpo
