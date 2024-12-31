@@ -5,8 +5,19 @@ from django.http import JsonResponse
 from .models import Post, Comment, Reply
 from .forms import PostForm, CommentForm, ReplyForm
 
-def home(request):
-    return render(request, 'index.html')
+def index(request):
+    posts = Post.objects.all().order_by('-created_at')
+
+    context = {
+        'posts' : posts,
+    }
+    return render(request, 'main/home.html', context)
+
+def about(request):
+    return render(request, 'main/about.html')
+
+def contact(request):
+    return render(request, 'main/contact.html')
 def post_list(request):
     posts = Post.objects.all().order_by('-created_at')
     return render(request, 'main/post_list.html', {'posts': posts})
